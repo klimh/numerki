@@ -4,7 +4,7 @@ from math import *
 
 def choose_function():
     print('Podaj numer wybranej funkcji:')
-    print(" 1. Wielomian \n 2. Trygonometryczna \n 3. Wykładnicza \n 4. Złożenie funkcji")
+    print("1. Wielomian \n2. Trygonometryczna \n3. Wykładnicza \n4. Złożenie funkcji")
 
     choice = None
     while choice is None:
@@ -63,7 +63,7 @@ def trigonometric_choose():
     while n is None or n < 1 or n > 8:
         try:
             print("Podaj numer funkcji (1-8): ")
-            print(" 1. sin(x) \n 2. cos(x) \n 3. tg(x) \n 4. arcsin(x) \n 5. arccos(x)\n 6. arctg(x)")
+            print("1. sin(x) \n2. cos(x) \n3. tg(x) \n4. arcsin(x) \n5. arccos(x) \n6. arctg(x)")
             n = int(input())
             if n < 1 or n > 8:
                 print("Błąd: niepoprawna wartość, podaj liczbę z przedziału 1-8.")
@@ -83,53 +83,21 @@ def trigonometric_choose():
     elif n == 6:
         fun = math.atan
 
-    def trig_calc(x):
-        return fun(x)
-
-    return trig_calc
+    return fun
 
 
 def exponential_choose():
-    """Pobiera od użytkownika parametry funkcji wykładniczej i zwraca funkcję obliczającą jej wartość.
-
-    Funkcja ma postać:
-        f(x) = A * exp(B * x) + C
+    """Zwraca funkcję wykładniczą.
     """
-    print("Wybrano funkcję wykładniczą w postaci f(x) = A * exp(B * x) + C.\n")
-
-    A = None
-    while A is None:
-        try:
-            A = float(input("Podaj wartość współczynnika A (mnożnik): "))
-        except ValueError:
-            print("Błąd: niepoprawna wartość, podaj liczbę rzeczywistą.")
-
-    B = None
-    while B is None:
-        try:
-            B = float(input("Podaj wartość współczynnika B (współczynnik wykładnika): "))
-        except ValueError:
-            print("Błąd: niepoprawna wartość, podaj liczbę rzeczywistą.")
-
-    C = None
-    while C is None:
-        try:
-            C = float(input("Podaj wartość współczynnika C (przesunięcie): "))
-        except ValueError:
-            print("Błąd: niepoprawna wartość, podaj liczbę rzeczywistą.")
-
-    def expo_calc(x):
-        from math import exp
-        return A * exp(B * x) + C
-
-    return expo_calc
+    print("Wybrano funkcję wykładniczą.\n")
+    return exp
 
 
 def composite_choose():
     """Pozwala użytkownikowi wybrać liczbę funkcji do złożenia, a następnie kolejne funkcje,
     i zwraca funkcję będącą ich kompozycją (funkcja złożona).
     """
-    print("Wybrano funkcję złożoną.\n Podawaj funkcje od wewnętrznej do zewnętrznej.")
+    print("Wybrano funkcję złożoną.\nPodawaj funkcje od wewnętrznej do zewnętrznej.")
 
     # Pobieramy liczbę funkcji do złożenia (minimum 2)
     n = None
@@ -171,8 +139,3 @@ def composite_choose():
         return result
 
     return composite_calc
-
-
-if __name__ == '__main__':
-    choosed_function = choose_function()
-    print(choosed_function(3.3))
