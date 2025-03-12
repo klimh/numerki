@@ -29,8 +29,7 @@ def falsi(a: float, b: float, accuracy: float, iterations: int, function):
     """tu mozna ulatwic i odrazu dac function(a) * function(b) > 0"""
     if fa * fb > 0:
 
-        """ewentualnie mozna dac zamiast exception ValueError"""
-        raise Exception("Błąd! Funkcja nie ma różnych znaków na krańcach przedziału!")
+        raise ValueError("Błąd! Funkcja nie ma różnych znaków na krańcach przedziału!")
     else:
         # W pętli wyznaczamy kolejne przybliżenia pierwiastk
         count = 0
@@ -41,14 +40,14 @@ def falsi(a: float, b: float, accuracy: float, iterations: int, function):
             # Warunki stopu
             if isIterations:
                 iterations -= 1
-                count += 1
                 if iterations <= 0:
                     return x0, count
             else:
                 # Warunek stopu wariant A
                 if prev_x is not None and abs(x0 - prev_x) < accuracy:
-                    return x0, 0
+                    return x0, count
             prev_x = x0
+            count += 1
 
             fx = function(x0)
 
@@ -74,29 +73,40 @@ def bisection(a: float, b: float, accuracy: float, iterations: int, function):
     :returns liczba wykonanych iteracji (zwraca 0 jeśli wybrano warunek stopu z dokładnością): int
     """
     # warunek stopu
-    isIterations = True if iterations > 0 else False
+    isIterations = iterations > 0
 
-    # obliczamy i zapamietujemy wartosci funkcji na keancach przedzialu
+    # obliczamy i zapamietujemy wartosci funkcji na krańcach przedzialu
     fa = function(a)
     fb = function(b)
 
     if fa * fb >= 0:
-        raise Exception("Błąd! Funkcja nie ma różnych znaków na krańcach przedziału!")
+        raise ValueError("Błąd! Funkcja nie ma różnych znaków na krańcach przedziału!")
     count = 0
     prev_x = None
     while True:
         x0 = (a + b) / 2.0 #srodek przedzialu
         fx = function(x0)
+        count += 1
+
+        if fx == 0:
+            return  x0, count
 
         #warunki stopu
         if isIterations:
+            if fx == 0:
+                return x0, count
+
             iterations -= 1
             count += 1
+
             if iterations <= 0:
                 return x0, count
         else:
+            if fx == 0:
+                return x0, count
+
             if prev_x is not None and abs(x0 - prev_x) < accuracy:
-                return x0, 0
+                return x0, count
         prev_x = x0
 
         #wybieramy nowy przedzial
@@ -106,9 +116,6 @@ def bisection(a: float, b: float, accuracy: float, iterations: int, function):
         else:
             a = x0
             fa = fx
-
-
-
 
 def choose_range():
     start = None
@@ -129,7 +136,7 @@ def choose_range():
     return start, end
 
 
-def plot_function(func, x0, a=-2, b=2, points=1000):
+def plot_function(func, x0_falsi, x0_bisection, a=-2, b=2, points=1000):
     """
     Rysuje wykres funkcji w zadanym przedziale [a, b].
 
@@ -146,12 +153,13 @@ def plot_function(func, x0, a=-2, b=2, points=1000):
     plt.axhline(0, color='black', linewidth=0.8)  # Oś OX
     plt.axvline(0, color='black', linewidth=0.8)  # Oś OY
 
-    plt.plot(x0, func(x0), 'ro', markersize=8, label="Przybliżone miejsce zerowe")
+    plt.plot(x0_falsi, func(x0_falsi), 'go', markersize=10, label="Przybliżone miejsce zerowe dla reguly falsi")
+    plt.plot(x0_bisection, func(x0_bisection), 'mo', markersize=8, label="Przybliżone miejsce zerowe dla metody bisekcji")
 
     plt.grid(True, linestyle='--', alpha=0.6)
     plt.xlabel("x")
     plt.ylabel("f(x)")
-    plt.legend()
+    plt.legend(loc="lower right")
     plt.tight_layout()
     plt.show()
 
@@ -170,7 +178,7 @@ def choose_stop_condition():
     while stop_mode is None:
         print("Wybierz warunek stopu:")
         print(" 1. Liczba iteracji")
-        print(" 2. Dokładność (np. 1e-5)")
+        print(" 2. Dokładność ε (np. 1e-5)")
         mode_input = input("Wprowadź 1 lub 2: ")
         if mode_input == "1":
             stop_mode = "iter"
@@ -198,7 +206,7 @@ def choose_stop_condition():
         accuracy = None
         while accuracy is None or accuracy <= 0:
             try:
-                user_input = input("Podaj dokładność (np. 1e-5): ")
+                user_input = input("Podaj dokładność ε(np. 1e-5): ")
                 accuracy_temp = float(user_input)
                 if accuracy_temp <= 0:
                     print("Błąd: dokładność musi być większa od 0.")
@@ -213,32 +221,28 @@ if __name__ == '__main__':
     function = choose_function()
     mode, value = choose_stop_condition()
 
-    method = None
-    while method not in ["1","2"]:
-        print("\nWybierz metodę numeryczną:")
-        print(" 1. Regula falsi")
-        print(" 2. Metoda bisekcji")
-        method = input("Wprowadź 1 lub 2: ")
-
-
     if mode == "iter":
         iterations = value
-        accuracy = 1e-10 # tu dalismy domyslna mala dokladnosc, gdy liczymy na iteracje
+        accuracy = 0
     else:
         iterations = 0
         accuracy = value
 
-    if method == "1":
-        x0, total_iterations = falsi(range_start, range_end, accuracy, iterations, function)
-    else:
-        x0, total_iterations = bisection(range_start, range_end, accuracy, iterations, function)
+    try:
+        x0_falsi, iterations_falsi = falsi(range_start, range_end, accuracy, iterations, function)
+        x0_bisection, iterations_bisection = bisection(range_start, range_end, accuracy, iterations, function)
+    except ValueError:
+        print("Błąd! Funkcja nie ma różnych znaków na krańcach przedziału!")
+        exit()
 
 
-    plot_function(function, x0, range_start, range_end)
+    plot_function(function, x0_falsi, x0_bisection, range_start, range_end)
+
 
     print("\n===== ROZWIĄZANIE =====")
-    print(f"Obliczone miejsce zerowe {x0}.")
-    if total_iterations != 0:
-        print(f"Liczba wykonanych iteracji: {total_iterations}.")
+    if iterations == 0:
+        #Warunek stopu: dokładność
+        print(f"Obliczone miejsca zerowe:\nMetodą bisekcji: {x0_bisection} Liczba wykonanych iteracji: {iterations_bisection}\nMetodą falsi: {x0_falsi} Liczba wykonanych iteracji: {iterations_falsi}.")
     else:
-        print("\nUżyto dokładności: " + str(accuracy))
+        #Warunek stopu: liczba iteracji
+        print(f"Obliczone miejsca zerowe:\nMetodą bisekcji: {x0_bisection}\nMetodą falsi: {x0_falsi}.")
