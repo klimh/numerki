@@ -246,3 +246,4 @@ if __name__ == '__main__':
     else:
         #Warunek stopu: liczba iteracji
         print(f"Obliczone miejsca zerowe:\nMetodą bisekcji: {x0_bisection}\nMetodą falsi: {x0_falsi}.")
+
