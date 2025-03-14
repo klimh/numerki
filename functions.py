@@ -1,4 +1,4 @@
-import math
+﻿import math
 from math import *
 
 
@@ -60,7 +60,7 @@ def trigonometric_choose():
     print("Wybrano funkcję trygonometryczną.\n")
 
     n = None
-    while n is None or n < 1 or n > 8:
+    while n is None or n < 1 or n > 6:
         try:
             print("Podaj numer funkcji (1-8): ")
             print("1. sin(x) \n2. cos(x) \n3. tg(x) \n4. arcsin(x) \n5. arccos(x) \n6. arctg(x)")
@@ -134,7 +134,7 @@ def composite_choose():
     # Definicja funkcji złożonej. Zaczyna się od zewnętrznej funkcji, czyli od pierwszej podanej.
     def composite_calc(x):
         result = x
-        for f in functions:
+        for f in reversed(functions):
             result = f(result)
         return result
 
