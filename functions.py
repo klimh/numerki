@@ -97,7 +97,7 @@ def composite_choose():
     """Pozwala użytkownikowi wybrać liczbę funkcji do złożenia, a następnie kolejne funkcje,
     i zwraca funkcję będącą ich kompozycją (funkcja złożona).
     """
-    print("Wybrano funkcję złożoną.\nPodawaj funkcje od wewnętrznej do zewnętrznej.")
+    print("Wybrano funkcję złożoną.\nPodawaj funkcje od zewnętrznej do wewnętrznej.")
 
     # Pobieramy liczbę funkcji do złożenia (minimum 2)
     n = None
@@ -131,7 +131,7 @@ def composite_choose():
         func = choose_basic_function()
         functions.append(func)
 
-    # Definicja funkcji złożonej. Zaczyna się od najbardziej zagnieżdzonej funkcji, czyli od pierwszej podanej.
+    # Definicja funkcji złożonej. Zaczyna się od zewnętrznej funkcji, czyli od pierwszej podanej.
     def composite_calc(x):
         result = x
         for f in functions:
